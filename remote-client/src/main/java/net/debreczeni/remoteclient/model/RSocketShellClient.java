@@ -3,6 +3,8 @@ package net.debreczeni.remoteclient.model;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
+import net.debreczeni.remoteclient.image.Display;
+import net.debreczeni.remoteclient.ui.elements.ScreenShare;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -20,8 +22,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PreDestroy;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.UUID;
+
+import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 @Slf4j
 @ShellComponent
@@ -115,12 +123,46 @@ public class RSocketShellClient {
     public void stream() {
         if (userIsLoggedIn()) {
             log.info("\n\n**** Request-Stream\n**** Send one request.\n**** Log responses.\n**** Type 's' to stop.");
+
+            var quitButton = new JButton("Quit");
+            quitButton.addActionListener((ActionEvent event) -> {
+                System.exit(0);
+            });
+
+            JFrame jFrame = new JFrame();
+            ScreenShare screenShare = new ScreenShare();
+            jFrame.setFocusable(true);
+            createLayout(jFrame, quitButton);
+            jFrame.setTitle("Quit button");
+            jFrame.setSize(1980, 1180);
+            jFrame.setLayout(new FlowLayout());
+            jFrame.setLocationRelativeTo(null);
+            jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+            jFrame.add(screenShare);
+
+            EventQueue.invokeLater(() -> {
+                jFrame.setVisible(true);
+            });
+
             disposable = this.rsocketRequester
                     .route("stream")
                     .data(new Message(CLIENT, STREAM))
                     .retrieveFlux(Message.class)
-                    .subscribe(message -> log.info("Response: {} \n(Type 's' to stop.)", message));
+                    .subscribe(message -> {
+                        log.info("Response: {} ms \n(Type 's' to stop.)", System.currentTimeMillis() - message.getCreated());
+                        screenShare.updateImage(message.getImage());
+                    });
         }
+    }
+
+    private void createLayout(JFrame jFrame, JComponent... arg) {
+        var pane = jFrame.getContentPane();
+        var gl = new GroupLayout(pane);
+        pane.setLayout(gl);
+
+        Arrays.stream(arg).forEach(obj -> gl.setHorizontalGroup(gl.createSequentialGroup().addComponent(obj)));
+        Arrays.stream(arg).forEach(obj -> gl.setVerticalGroup(gl.createSequentialGroup().addComponent(obj)));
     }
 
     @ShellMethod("Stream some settings to the server. Stream of responses will be printed.")
