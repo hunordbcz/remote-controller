@@ -1,5 +1,6 @@
-package net.debreczeni.remoteclient.util;
+package net.debreczeni.remotecommon.util;
 
+import lombok.Singular;
 import lombok.SneakyThrows;
 
 import java.awt.*;

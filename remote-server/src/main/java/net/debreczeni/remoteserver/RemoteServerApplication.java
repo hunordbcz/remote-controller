@@ -1,20 +1,23 @@
 package net.debreczeni.remoteserver;
 
-import org.springframework.boot.SpringApplication;
+import net.debreczeni.remoteclient.ui.Main;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
+
+import java.awt.*;
 
 @SpringBootApplication
 public class RemoteServerApplication {
 
     public static void main(String[] args) {
-//        SpringApplication.run(RemoteServerApplication.class, args);
         SpringApplicationBuilder builder = new SpringApplicationBuilder(RemoteServerApplication.class);
+        var context = builder.headless(false).run(args);
 
-        builder.headless(false);
-
-        ConfigurableApplicationContext context = builder.run(args);
+//        EventQueue.invokeLater(() -> {
+//
+//            var ex = context.getBean(Main.class);
+//            ex.setVisible(true);
+//        });
     }
 
 }

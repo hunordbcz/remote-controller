@@ -1,4 +1,4 @@
-package net.debreczeni.remoteclient.util;
+package net.debreczeni.remotecommon.util;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

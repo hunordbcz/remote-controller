@@ -1,9 +1,8 @@
 package net.debreczeni.remoteserver.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import net.debreczeni.remoteserver.image.Display;
-import net.debreczeni.remoteserver.model.Message;
-import net.debreczeni.remoteserver.model.socket.SocketImage;
+import net.debreczeni.remotecommon.image.Display;
+import net.debreczeni.remotecommon.model.socket.events.RemoteEvent;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.rsocket.RSocketRequester;
@@ -12,14 +11,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import net.debreczeni.remotecommon.model.Message;
+import net.debreczeni.remotecommon.model.socket.RemoteImage;
 
 import javax.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -43,7 +44,7 @@ public class RSocketController {
     void connectShellClientAndAskForTelemetry(RSocketRequester requester,
                                               @Payload String client) {
 
-        requester.rsocket()
+        Objects.requireNonNull(requester.rsocket())
                 .onClose()
                 .doFirst(() -> {
                     // Add all new clients to a client list
@@ -101,6 +102,21 @@ public class RSocketController {
     }
 
     /**
+     * This @MessageMapping is intended to be used "fire --> forget" style.
+     * When a new CommandRequest is received, nothing is returned (void)
+     *
+     * @param request
+     * @return
+     */
+    @PreAuthorize("hasRole('USER')")
+    @MessageMapping("remote-event")
+    public Mono<Void> remoteEvent(final RemoteEvent remoteEvent, @AuthenticationPrincipal UserDetails user) {
+        log.info("Received remoteEvent request: {}", remoteEvent);
+        log.info("remoteEvent initiated by '{}' in the role '{}'", user.getUsername(), user.getAuthorities());
+        return Mono.empty();
+    }
+
+    /**
      * This @MessageMapping is intended to be used "subscribe --> stream" style.
      * When a new request command is received, a new stream of events is started and returned to the client.
      *
@@ -109,7 +125,7 @@ public class RSocketController {
      */
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("stream")
-    Flux<SocketImage> stream(final long millisInterval, @AuthenticationPrincipal UserDetails user) {
+    Flux<RemoteImage> stream(final long millisInterval, @AuthenticationPrincipal UserDetails user) {
         log.info("Received stream request:");
         log.info("Stream initiated by '{}' in the role '{}'", user.getUsername(), user.getAuthorities());
 
@@ -117,7 +133,23 @@ public class RSocketController {
                 // create a new indexed Flux emitting one element every second
                 .interval(Duration.ofMillis(millisInterval))
                 // create a Flux of new Messages using the indexed Flux
-                .map(index -> new SocketImage(new Display(0).takeScreenshot()));
+                .map(index -> new RemoteImage(Display.getInstance(0).takeScreenshot()));
+    }
+
+    /**
+     * This @MessageMapping is intended to be used "subscribe --> stream" style.
+     * When a new request command is received, a new stream of events is started and returned to the client.
+     *
+     * @param request
+     * @return
+     */
+    @PreAuthorize("hasRole('USER')")
+    @MessageMapping("image-stream")
+    Flux<RemoteImage> imageStream(final int screenNr) {
+        final Display display = Display.getInstance(screenNr);
+        return Flux
+                .interval(Duration.ofMillis(50))
+                .map(index -> new RemoteImage(display.takeScreenshot()));
     }
 
     /**

@@ -1,6 +1,6 @@
 package net.debreczeni.remoteclient.ui;
 
-import net.debreczeni.remoteclient.util.SingletonRobot;
+import net.debreczeni.remotecommon.util.SingletonRobot;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;

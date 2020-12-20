@@ -3,8 +3,9 @@ package net.debreczeni.remoteclient.model;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
-import net.debreczeni.remoteclient.model.socket.SocketImage;
 import net.debreczeni.remoteclient.ui.elements.ScreenShare;
+import net.debreczeni.remotecommon.model.Message;
+import net.debreczeni.remotecommon.model.socket.RemoteImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -25,11 +26,11 @@ import javax.annotation.PreDestroy;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.UUID;
-
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 @Slf4j
 @ShellComponent
@@ -57,7 +58,7 @@ public class RSocketShellClient {
     @ShellMethod("Login with your username and password.")
     public void login(String username, String password) {
         log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
-        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new ClientHandler());
+        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new net.debreczeni.remotecommon.controller.ClientHandler());
         UsernamePasswordMetadata user = new UsernamePasswordMetadata(username, password);
         this.rsocketRequester = rsocketRequesterBuilder
                 .setupRoute("shell-client")
@@ -120,17 +121,42 @@ public class RSocketShellClient {
     }
 
     @ShellMethod("Send one request. Many responses (stream) will be printed.")
-    public void stream(final long millisInterval) {
+    public void stream(final int screenNr) {
         if (userIsLoggedIn()) {
             log.info("\n\n**** Request-Stream\n**** Send one request.\n**** Log responses.\n**** Type 's' to stop.");
 
+            JFrame jFrame = new JFrame();
             var quitButton = new JButton("Quit");
             quitButton.addActionListener((ActionEvent event) -> {
-                System.exit(0);
+                jFrame.dispose();
             });
 
-            JFrame jFrame = new JFrame();
+
             ScreenShare screenShare = new ScreenShare();
+            jFrame.addKeyListener(new KeyListener() {
+                @Override
+                public void keyTyped(KeyEvent e) {
+
+                }
+
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    rsocketRequester
+                            .route("remote-event")
+//                            .data(new RemoteEvent(RemoteEvent.KEYBOARD.PRESS, e.getKeyCode()))
+                            .send()
+                            .block();
+                }
+
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    rsocketRequester
+                            .route("remote-event")
+//                            .data(new RemoteEvent(RemoteEvent.KEYBOARD.RELEASE, e.getKeyCode()))
+                            .send()
+                            .block();
+                }
+            });
             jFrame.setFocusable(true);
             createLayout(jFrame, quitButton);
             jFrame.setTitle("Quit button");
@@ -146,9 +172,9 @@ public class RSocketShellClient {
             });
 
             disposable = this.rsocketRequester
-                    .route("stream")
-                    .data(millisInterval)
-                    .retrieveFlux(SocketImage.class)
+                    .route("image-stream")
+                    .data(0)
+                    .retrieveFlux(RemoteImage.class)
                     .subscribe(image -> {
                         log.info("Response: {} ms \n(Type 's' to stop.)", System.currentTimeMillis() - image.getCreated());
                         screenShare.updateImage(image);

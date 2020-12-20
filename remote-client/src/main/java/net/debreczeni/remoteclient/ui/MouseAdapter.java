@@ -1,9 +1,8 @@
 package net.debreczeni.remoteclient.ui;
 
 import lombok.SneakyThrows;
-import net.debreczeni.remoteclient.image.Display;
 import net.debreczeni.remoteclient.ui.elements.ScreenView;
-import net.debreczeni.remoteclient.util.SingletonRobot;
+import net.debreczeni.remotecommon.util.SingletonRobot;
 
 import java.awt.*;
 import java.awt.event.InputEvent;

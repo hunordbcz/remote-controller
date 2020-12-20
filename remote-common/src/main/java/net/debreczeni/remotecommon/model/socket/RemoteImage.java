@@ -1,7 +1,8 @@
-package net.debreczeni.remoteclient.model.socket;
+package net.debreczeni.remotecommon.model.socket;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,12 +14,13 @@ import java.io.InputStream;
 
 @Data
 @AllArgsConstructor
-public class SocketImage {
+public class RemoteImage {
     private static final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     private byte[] data;
     private long created;
 
-    public SocketImage(BufferedImage bufferedImage) throws IOException {
+    @SneakyThrows
+    public RemoteImage(BufferedImage bufferedImage) {
         created = System.currentTimeMillis();
 
         ImageIO.write(bufferedImage, "JPG", byteArrayOutputStream);
@@ -33,7 +35,7 @@ public class SocketImage {
         return new ImageIcon(bi);
     }
 
-    public long getCreated(){
+    public long getCreated() {
         return created;
     }
 }

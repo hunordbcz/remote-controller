@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.image;
+package net.debreczeni.remotecommon.image;
 
 import lombok.SneakyThrows;
 
@@ -17,26 +17,37 @@ public class Display implements Imageable {
             .sorted(Comparator.comparingInt(a -> a.getDefaultConfiguration().getBounds().x))
             .toArray(GraphicsDevice[]::new);
 
-    private final Rectangle screenRectangle;
-    private final int nr;
-    private Robot robot;
+    private Rectangle screenRectangle;
+    private int nr = 0;
+    private final Robot robot;
 
-    Display(Robot robot, int nr) throws AWTException {
-        this(nr);
+    private static Display single_instance = null;
 
-        this.robot = robot;
+    private Display() throws AWTException {
+        robot = new Robot();
+        screenRectangle = devices[nr].getDefaultConfiguration().getBounds();
     }
 
     @SneakyThrows
-    public Display(int nr) {
+    public static Display getInstance(int nr) {
+        if (single_instance == null){
+            single_instance = new Display();
+        }
+
+        if(single_instance.getNr() != nr){
+            single_instance.setNr(nr);
+        }
+
+        return single_instance;
+    }
+
+    private void setNr(int nr){
         if (nr > devices.length) {
             throw new IllegalArgumentException("Invalid display number");
         }
 
         this.nr = nr;
-
-        screenRectangle = new Rectangle(devices[nr].getDefaultConfiguration().getBounds());
-        robot = new Robot();
+        this.screenRectangle = devices[nr].getDefaultConfiguration().getBounds();
     }
 
     public int getNr() {
@@ -44,23 +55,15 @@ public class Display implements Imageable {
     }
 
     public static Point getPointByScreen(Point point, int screenNr) {
-        int x = devices[screenNr].getDefaultConfiguration().getBounds().x;
-        int y = devices[screenNr].getDefaultConfiguration().getBounds().y;
+        Rectangle bounds = devices[screenNr].getDefaultConfiguration().getBounds();
+        int x = bounds.x;
+        int y = bounds.y;
 
         return new Point(x + point.x, y + point.y);
-    }
-
-    public BufferedImage takeScreenshot(int nr){
-        return robot.createScreenCapture(devices[nr].getDefaultConfiguration().getBounds());
     }
 
     @Override
     public BufferedImage takeScreenshot() {
         return robot.createScreenCapture(screenRectangle);
-    }
-
-    @Override
-    public void saveScreenshot(String path) throws IOException {
-        ImageIO.write(takeScreenshot(), "jpg", new File(path));
     }
 }
