@@ -1,6 +1,8 @@
 package net.debreczeni.remoteclient.ui.elements;
 
 
+import net.debreczeni.remoteclient.model.Message;
+import net.debreczeni.remoteclient.model.socket.SocketImage;
 import net.debreczeni.remoteclient.ui.MouseAdapter;
 
 import javax.swing.*;
@@ -28,7 +30,7 @@ public class ScreenShare extends JPanel {
         return screenView;
     }
 
-    public void updateImage(ImageIcon image){
+    public void updateImage(SocketImage image){
         screenView.updateImage(image);
     }
 

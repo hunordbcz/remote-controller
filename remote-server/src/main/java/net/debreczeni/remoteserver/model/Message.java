@@ -29,7 +29,7 @@ public class Message {
             ImageIO.write(image, "JPG", baos);
             byte[] bytes = baos.toByteArray();
             this.image = bytes;
-        } catch (AWTException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

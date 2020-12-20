@@ -1,8 +1,10 @@
 package net.debreczeni.remoteclient.ui.elements;
 
 import net.debreczeni.remoteclient.image.Display;
+import net.debreczeni.remoteclient.model.socket.SocketImage;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class ScreenView extends JLabel {
 
@@ -36,5 +38,12 @@ public class ScreenView extends JLabel {
     public void updateImage(ImageIcon image){
 //        SwingUtilities.invokeLater(() -> setIcon(image));
         setIcon(image);
+    }
+
+    public void updateImage(SocketImage image){
+        try {
+            setIcon(image.get());
+        } catch (IOException ignored) {
+        }
     }
 }

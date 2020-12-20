@@ -3,7 +3,7 @@ package net.debreczeni.remoteclient.model;
 import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
-import net.debreczeni.remoteclient.image.Display;
+import net.debreczeni.remoteclient.model.socket.SocketImage;
 import net.debreczeni.remoteclient.ui.elements.ScreenShare;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,7 +66,7 @@ public class RSocketShellClient {
                 .rsocketStrategies(builder ->
                         builder.encoder(new SimpleAuthenticationEncoder()))
                 .rsocketConnector(connector -> connector.acceptor(responder))
-                .connectTcp("localhost", 7000)
+                .connectTcp("192.168.0.102", 7000)
                 .block();
 
         this.rsocketRequester.rsocket()
@@ -120,7 +120,7 @@ public class RSocketShellClient {
     }
 
     @ShellMethod("Send one request. Many responses (stream) will be printed.")
-    public void stream() {
+    public void stream(final long millisInterval) {
         if (userIsLoggedIn()) {
             log.info("\n\n**** Request-Stream\n**** Send one request.\n**** Log responses.\n**** Type 's' to stop.");
 
@@ -137,7 +137,7 @@ public class RSocketShellClient {
             jFrame.setSize(1980, 1180);
             jFrame.setLayout(new FlowLayout());
             jFrame.setLocationRelativeTo(null);
-            jFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
             jFrame.add(screenShare);
 
@@ -147,11 +147,11 @@ public class RSocketShellClient {
 
             disposable = this.rsocketRequester
                     .route("stream")
-                    .data(new Message(CLIENT, STREAM))
-                    .retrieveFlux(Message.class)
-                    .subscribe(message -> {
-                        log.info("Response: {} ms \n(Type 's' to stop.)", System.currentTimeMillis() - message.getCreated());
-                        screenShare.updateImage(message.getImage());
+                    .data(millisInterval)
+                    .retrieveFlux(SocketImage.class)
+                    .subscribe(image -> {
+                        log.info("Response: {} ms \n(Type 's' to stop.)", System.currentTimeMillis() - image.getCreated());
+                        screenShare.updateImage(image);
                     });
         }
     }

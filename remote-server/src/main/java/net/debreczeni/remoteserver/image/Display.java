@@ -1,5 +1,7 @@
 package net.debreczeni.remoteserver.image;
 
+import lombok.SneakyThrows;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -25,7 +27,8 @@ public class Display implements Imageable {
         this.robot = robot;
     }
 
-    public Display(int nr) throws AWTException {
+    @SneakyThrows
+    public Display(int nr) {
         if (nr > devices.length) {
             throw new IllegalArgumentException("Invalid display number");
         }

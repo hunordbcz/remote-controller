@@ -1,7 +1,9 @@
 package net.debreczeni.remoteserver.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import net.debreczeni.remoteserver.image.Display;
 import net.debreczeni.remoteserver.model.Message;
+import net.debreczeni.remoteserver.model.socket.SocketImage;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.rsocket.RSocketRequester;
@@ -10,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -106,15 +109,15 @@ public class RSocketController {
      */
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("stream")
-    Flux<Message> stream(final Message request, @AuthenticationPrincipal UserDetails user) {
-        log.info("Received stream request: {}", request);
+    Flux<SocketImage> stream(final long millisInterval, @AuthenticationPrincipal UserDetails user) {
+        log.info("Received stream request:");
         log.info("Stream initiated by '{}' in the role '{}'", user.getUsername(), user.getAuthorities());
 
         return Flux
                 // create a new indexed Flux emitting one element every second
-                .interval(Duration.ofSeconds(1))
+                .interval(Duration.ofMillis(millisInterval))
                 // create a Flux of new Messages using the indexed Flux
-                .map(index -> new Message(SERVER, STREAM, index));
+                .map(index -> new SocketImage(new Display(0).takeScreenshot()));
     }
 
     /**
