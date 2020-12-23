@@ -1,8 +1,8 @@
-package net.debreczeni.remoteserver.model;
+package net.debreczeni.remotedesktop.model;
 
 import io.rsocket.exceptions.RejectedSetupException;
-import net.debreczeni.remoteserver.controller.RClientController;
-import net.debreczeni.remoteserver.util.InetAddress;
+import net.debreczeni.remotedesktop.controller.RClientController;
+import net.debreczeni.remotedesktop.util.InetAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.configs;
+package net.debreczeni.remotedesktop.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,13 +45,13 @@ public class RSocketSecurityConfig {
 
         UserDetails control = User.withDefaultPasswordEncoder()
                 .username("control")
-                .password(net.debreczeni.remoteserver.model.User.getInstance().getControlToken())
+                .password(net.debreczeni.remotedesktop.model.User.getInstance().getControlToken())
                 .roles("CONTROL")
                 .build();
 
         UserDetails view = User.withDefaultPasswordEncoder()
                 .username("view")
-                .password(net.debreczeni.remoteserver.model.User.getInstance().getViewToken())
+                .password(net.debreczeni.remotedesktop.model.User.getInstance().getViewToken())
                 .roles("VIEW")
                 .build();
 

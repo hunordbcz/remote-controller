@@ -1,8 +1,8 @@
-package net.debreczeni.remoteserver.model;
+package net.debreczeni.remotedesktop.model;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import net.debreczeni.remoteserver.util.InetAddress;
+import net.debreczeni.remotedesktop.util.InetAddress;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.Serializable;

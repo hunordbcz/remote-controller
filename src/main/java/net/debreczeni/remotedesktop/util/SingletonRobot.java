@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.util;
+package net.debreczeni.remotedesktop.util;
 
 import lombok.SneakyThrows;
 

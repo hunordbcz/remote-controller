@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.image;
+package net.debreczeni.remotedesktop.image;
 
 import java.awt.image.BufferedImage;
 

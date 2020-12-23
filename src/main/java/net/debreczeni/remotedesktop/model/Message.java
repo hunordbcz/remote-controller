@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.model;
+package net.debreczeni.remotedesktop.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

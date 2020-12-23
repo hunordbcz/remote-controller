@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.configs;
+package net.debreczeni.remotedesktop.configs;
 
 import io.rsocket.core.RSocketServer;
 import io.rsocket.core.Resume;

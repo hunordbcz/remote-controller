@@ -1,10 +1,9 @@
-package net.debreczeni.remoteserver;
+package net.debreczeni.remotedesktop;
 
-import net.debreczeni.remoteserver.model.Main;
+import net.debreczeni.remotedesktop.model.Main;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import javax.swing.*;
 import java.awt.*;
 
 @SpringBootApplication

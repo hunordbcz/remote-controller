@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.controller;
+package net.debreczeni.remotedesktop.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;

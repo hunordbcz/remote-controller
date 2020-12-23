@@ -1,4 +1,4 @@
-package net.debreczeni.remoteserver.model.socket.events;
+package net.debreczeni.remotedesktop.model.socket.events;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

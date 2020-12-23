@@ -1,11 +1,11 @@
-package net.debreczeni.remoteserver.controller;
+package net.debreczeni.remotedesktop.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import net.debreczeni.remoteserver.image.Display;
-import net.debreczeni.remoteserver.model.Message;
-import net.debreczeni.remoteserver.model.User;
-import net.debreczeni.remoteserver.model.socket.RemoteImage;
-import net.debreczeni.remoteserver.model.socket.events.RemoteEvent;
+import net.debreczeni.remotedesktop.image.Display;
+import net.debreczeni.remotedesktop.model.Message;
+import net.debreczeni.remotedesktop.model.User;
+import net.debreczeni.remotedesktop.model.socket.RemoteImage;
+import net.debreczeni.remotedesktop.model.socket.events.RemoteEvent;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.rsocket.RSocketRequester;

@@ -1,11 +1,9 @@
-package net.debreczeni.remoteserver.controller;
+package net.debreczeni.remotedesktop.controller;
 
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
-import net.debreczeni.remoteserver.model.Message;
-import net.debreczeni.remoteserver.model.User;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import net.debreczeni.remotedesktop.model.Message;
+import net.debreczeni.remotedesktop.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.rsocket.RSocketRequester;
