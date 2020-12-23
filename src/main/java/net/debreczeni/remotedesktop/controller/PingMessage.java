@@ -10,8 +10,7 @@ import java.time.Duration;
 public class PingMessage {
 
     @MessageMapping("client-status")
-    public Flux<String> statusUpdate(String status) {
-        log.info("Connection {}", status);
+    public Flux<String> statusUpdate() {
         return Flux.interval(Duration.ofSeconds(5)).map(index -> String.valueOf(Runtime.getRuntime().freeMemory()));
     }
 }

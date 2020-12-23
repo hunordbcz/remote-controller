@@ -1,13 +1,17 @@
 package net.debreczeni.remotedesktop.controller;
 
+import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.model.Message;
 import net.debreczeni.remotedesktop.model.User;
+import net.debreczeni.remotedesktop.util.SerializerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.stereotype.Component;
@@ -48,17 +52,18 @@ public class RClientController {
     }
 
     //    @ShellMethod("Login with your username and password.")
+    @SneakyThrows
     public void login(String username, String password) {
         log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
-//        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
+        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
         UsernamePasswordMetadata user = new UsernamePasswordMetadata(username, password);
         this.rsocketRequester = rsocketRequesterBuilder
                 .setupRoute("shell-client")
-                .setupData(User.getInstance())
+                .setupData(SerializerUtil.toString(User.getInstance()))
                 .setupMetadata(user, SIMPLE_AUTH)
                 .rsocketStrategies(builder ->
                         builder.encoder(new SimpleAuthenticationEncoder()).decoder())
-//                .rsocketConnector(connector -> connector.acceptor(responder))
+                .rsocketConnector(connector -> connector.acceptor(responder))
                 .connectTcp("192.168.0.102", 7000)
                 .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
                 .block();
