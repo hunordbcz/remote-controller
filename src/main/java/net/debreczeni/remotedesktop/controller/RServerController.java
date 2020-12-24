@@ -8,6 +8,8 @@ import net.debreczeni.remotedesktop.model.User;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
 import net.debreczeni.remotedesktop.model.socket.events.RemoteEvent;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.rsocket.RSocketRequester;
@@ -49,25 +51,41 @@ public class RServerController {
                                               @Payload String client) {
 
         User user = SerializerUtil.fromString(client);
-        log.error(user.getName(), user.getViewToken(), user.getControlToken());
+//        log.error(user.getName(), user.getViewToken(), user.getControlToken());
 
         Objects.requireNonNull(requester.rsocket())
                 .onClose()
                 .doFirst(() -> {
-                    // Add all new clients to a client list
-                    log.info("Client: {} CONNECTED.", client);
+                    log.info("Client: {} CONNECTED.", user.getName());
                     CLIENTS.add(requester);
                 })
                 .doOnError(error -> {
-                    // Warn when channels are closed by clients
                     log.warn("Channel to client {} CLOSED", client);
                 })
-                .doFinally(consumer -> {
-                    // Remove disconnected clients from the client list
-                    CLIENTS.remove(requester);
-                    log.info("Client {} DISCONNECTED", client);
-                })
-                .subscribe();
+//                .doFinally(consumer -> {
+//                    CLIENTS.remove(requester);
+//                    log.info("Client {} DISCONNECTED", client);
+//                })
+                .subscribe(new Subscriber<Void>() {
+                    @Override
+                    public void onSubscribe(Subscription subscription) {
+                    }
+
+                    @Override
+                    public void onNext(Void unused) {
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        log.error("onError");
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        CLIENTS.remove(requester);
+                        log.info("Client {} DISCONNECTED", client);
+                    }
+                });
 
         // Callback to client, confirming connection
         requester.route("client-status")
@@ -130,7 +148,7 @@ public class RServerController {
      * @param request
      * @return
      */
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('VIEW')")
     @MessageMapping("image-stream")
     Flux<RemoteImage> imageStream(final int screenNr) {
         final Display display = Display.getInstance(screenNr);

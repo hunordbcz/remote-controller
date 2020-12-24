@@ -1,14 +1,19 @@
 package net.debreczeni.remotedesktop.controller;
 
 import io.rsocket.SocketAcceptor;
+import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.metadata.WellKnownMimeType;
+import io.rsocket.transport.ClientTransport;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.model.Message;
 import net.debreczeni.remotedesktop.model.User;
+import net.debreczeni.remotedesktop.model.socket.RemoteImage;
+import net.debreczeni.remotedesktop.ui.ScreenShare;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.codec.StringDecoder;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
@@ -23,6 +28,10 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PreDestroy;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.UUID;
@@ -62,10 +71,12 @@ public class RClientController {
                 .setupData(SerializerUtil.toString(User.getInstance()))
                 .setupMetadata(user, SIMPLE_AUTH)
                 .rsocketStrategies(builder ->
-                        builder.encoder(new SimpleAuthenticationEncoder()).decoder())
+                        builder.encoder(new SimpleAuthenticationEncoder())
+                )
                 .rsocketConnector(connector -> connector.acceptor(responder))
                 .connectTcp("192.168.0.102", 7000)
                 .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
+                .onErrorStop()
                 .block();
 
         this.rsocketRequester.rsocket()
@@ -119,7 +130,7 @@ public class RClientController {
     }
 
 //    @ShellMethod("Send one request. Many responses (stream) will be printed.")
-    /*public void stream(final int screenNr) {
+    public void stream(final int screenNr) {
         if (userIsLoggedIn()) {
             log.info("\n\n**** Request-Stream\n**** Send one request.\n**** Log responses.\n**** Type 's' to stop.");
 
@@ -178,7 +189,7 @@ public class RClientController {
                         screenShare.updateImage(image);
                     });
         }
-    }*/
+    }
 
     private void createLayout(JFrame jFrame, JComponent... arg) {
         var pane = jFrame.getContentPane();

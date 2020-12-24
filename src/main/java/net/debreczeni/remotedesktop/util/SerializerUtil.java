@@ -5,7 +5,6 @@ import java.util.Base64;
 
 public final class SerializerUtil {
     private SerializerUtil() {
-
     }
 
     public static <T extends Serializable> T fromString(String content) throws IOException, ClassNotFoundException {

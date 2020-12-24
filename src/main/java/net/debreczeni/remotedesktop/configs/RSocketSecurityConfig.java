@@ -30,32 +30,19 @@ public class RSocketSecurityConfig {
 
     @Bean
     MapReactiveUserDetailsService authentication() {
-        //This is NOT intended for production use (it is intended for getting started experience only)
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("pass")
-                .roles("USER")
-                .build();
-
-        UserDetails admin = User.withDefaultPasswordEncoder()
-                .username("test")
-                .password("pass")
-                .roles("NONE")
-                .build();
-
-        UserDetails control = User.withDefaultPasswordEncoder()
-                .username("control")
-                .password(net.debreczeni.remotedesktop.model.User.getInstance().getControlToken())
-                .roles("CONTROL")
-                .build();
-
         UserDetails view = User.withDefaultPasswordEncoder()
                 .username("view")
                 .password(net.debreczeni.remotedesktop.model.User.getInstance().getViewToken())
                 .roles("VIEW")
                 .build();
 
-        return new MapReactiveUserDetailsService(user, admin, control, view);
+        UserDetails control = User.withDefaultPasswordEncoder()
+                .username("control")
+                .password(net.debreczeni.remotedesktop.model.User.getInstance().getControlToken())
+                .roles("VIEW", "CONTROL")
+                .build();
+
+        return new MapReactiveUserDetailsService(view, control);
     }
 
     @Bean

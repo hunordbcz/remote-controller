@@ -77,6 +77,7 @@ public class Main extends JFrame {
 
                 try{
                     rSocketShellClient.login("control", inputPasswordText);
+                    rSocketShellClient.stream(0);
                 }catch (RejectedSetupException e){
                     JOptionPane.showMessageDialog(null, "Wrong Password", "Error", JOptionPane.ERROR_MESSAGE);
                 }
