@@ -66,10 +66,10 @@ public class Main extends JFrame {
                 String inputAddressText = inputAddress.getText();
                 String inputPasswordText = inputPassword.getText();
 
-                if (!checkIp(inputAddressText)) {
-                    JOptionPane.showMessageDialog(null, "Invalid ip Address", "Warning", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+//                if (!checkIp(inputAddressText)) {
+//                    JOptionPane.showMessageDialog(null, "Invalid ip Address", "Warning", JOptionPane.WARNING_MESSAGE);
+//                    return;
+//                }
                 if (!checkPassword(inputPasswordText)) {
                     JOptionPane.showMessageDialog(null, "Invalid Password", "Warning", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -118,7 +118,7 @@ public class Main extends JFrame {
     private void createElements() {
         startConnection = new JButton("Start Connection");
         inputAddress = new JTextField("192.168.0.102",16);
-        inputPassword = new JPasswordField(6);
+        inputPassword = new JPasswordField(User.getInstance().getControlToken(), 6);
     }
 
     private void addElements() {

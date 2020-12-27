@@ -30,6 +30,12 @@ public class RSocketSecurityConfig {
 
     @Bean
     MapReactiveUserDetailsService authentication() {
+        UserDetails admin = User.withDefaultPasswordEncoder()
+                .username("admin")
+                .password("admin")
+                .roles("VIEW", "CONTROL")
+                .build();
+
         UserDetails view = User.withDefaultPasswordEncoder()
                 .username("view")
                 .password(net.debreczeni.remotedesktop.model.User.getInstance().getViewToken())
@@ -42,7 +48,7 @@ public class RSocketSecurityConfig {
                 .roles("VIEW", "CONTROL")
                 .build();
 
-        return new MapReactiveUserDetailsService(view, control);
+        return new MapReactiveUserDetailsService(view, control, admin);
     }
 
     @Bean

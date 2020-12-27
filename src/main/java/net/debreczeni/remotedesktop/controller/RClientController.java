@@ -1,24 +1,25 @@
 package net.debreczeni.remotedesktop.controller;
 
 import io.rsocket.SocketAcceptor;
-import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.metadata.WellKnownMimeType;
-import io.rsocket.transport.ClientTransport;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.model.Message;
 import net.debreczeni.remotedesktop.model.User;
+import net.debreczeni.remotedesktop.model.socket.RemoteDisplays;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
+import net.debreczeni.remotedesktop.ui.DisplayDetails;
 import net.debreczeni.remotedesktop.ui.ScreenShare;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.codec.StringDecoder;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
+import org.springframework.shell.standard.ShellComponent;
+import org.springframework.shell.standard.ShellMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -27,18 +28,20 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PreDestroy;
+import javax.naming.AuthenticationException;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
+import java.io.IOException;
+import java.rmi.Remote;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @Component
-//@ShellComponent
+@ShellComponent
 public class RClientController {
 
     private static final String CLIENT = "Client";
@@ -60,7 +63,7 @@ public class RClientController {
         this.rsocketStrategies = strategies;
     }
 
-    //    @ShellMethod("Login with your username and password.")
+    @ShellMethod("Login with your username and password.")
     @SneakyThrows
     public void login(String username, String password) {
         log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
@@ -74,7 +77,7 @@ public class RClientController {
                         builder.encoder(new SimpleAuthenticationEncoder())
                 )
                 .rsocketConnector(connector -> connector.acceptor(responder))
-                .connectTcp("192.168.0.102", 7000)
+                .connectTcp("localhost", 7000)
                 .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
                 .onErrorStop()
                 .block();
@@ -117,6 +120,45 @@ public class RClientController {
         }
     }
 
+    @ShellMethod("get displays")
+    public void displays() {
+        userCheck();
+
+        RemoteDisplays displays = this.rsocketRequester
+                .route("displays")
+                .retrieveMono(RemoteDisplays.class)
+                .block();
+
+        JFrame jFrame = new JFrame("Choose display");
+        jFrame.setLayout(new FlowLayout());
+
+        displays.getScreenshotsByDisplay().forEach((nr, image) -> {
+            try {
+                jFrame.add(new DisplayDetails(nr, image));
+                jFrame.add(new DisplayDetails(nr, image));
+                jFrame.add(new DisplayDetails(nr, image));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+//        jFrame.setSize(500,110);
+        jFrame.revalidate();
+        jFrame.pack();
+        jFrame.repaint();
+
+        jFrame.setVisible(true);
+
+//        return displays;
+    }
+
+    @SneakyThrows
+    private void userCheck() {
+        if (null == this.rsocketRequester || this.rsocketRequester.rsocket().isDisposed()) {
+            log.warn("Please log in to the server first");
+            throw new AuthenticationException("Not logged in");
+        }
+    }
+
     //    @ShellMethod("Send one request. No response will be returned.")
     public void fireAndForget() throws InterruptedException {
         if (userIsLoggedIn()) {
@@ -129,7 +171,7 @@ public class RClientController {
         }
     }
 
-//    @ShellMethod("Send one request. Many responses (stream) will be printed.")
+    //    @ShellMethod("Send one request. Many responses (stream) will be printed.")
     public void stream(final int screenNr) {
         if (userIsLoggedIn()) {
             log.info("\n\n**** Request-Stream\n**** Send one request.\n**** Log responses.\n**** Type 's' to stop.");
@@ -138,10 +180,33 @@ public class RClientController {
             var quitButton = new JButton("Quit");
             quitButton.addActionListener((ActionEvent event) -> {
                 jFrame.dispose();
+                s();
+            });
+            ScreenShare screenShare = new ScreenShare();
+
+            jFrame.addComponentListener(new ComponentListener() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    java.awt.Component component = e.getComponent();
+                    screenShare.setSize(component.getWidth(), component.getHeight());
+                }
+
+                @Override
+                public void componentMoved(ComponentEvent e) {
+
+                }
+
+                @Override
+                public void componentShown(ComponentEvent e) {
+
+                }
+
+                @Override
+                public void componentHidden(ComponentEvent e) {
+
+                }
             });
 
-
-            ScreenShare screenShare = new ScreenShare();
             jFrame.addKeyListener(new KeyListener() {
                 @Override
                 public void keyTyped(KeyEvent e) {
@@ -169,7 +234,6 @@ public class RClientController {
             jFrame.setFocusable(true);
             createLayout(jFrame, quitButton);
             jFrame.setTitle("Quit button");
-            jFrame.setSize(1980, 1180);
             jFrame.setLayout(new FlowLayout());
             jFrame.setLocationRelativeTo(null);
             jFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

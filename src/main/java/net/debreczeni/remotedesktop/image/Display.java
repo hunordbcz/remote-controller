@@ -9,53 +9,61 @@ import java.util.Comparator;
 
 public class Display implements Imageable {
     private static final GraphicsEnvironment g = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    private static final GraphicsDevice[] devices = Arrays
+    private static final Rectangle[] devicesBounds = Arrays
             .stream(g.getScreenDevices())
-            .sorted(Comparator.comparingInt(a -> a.getDefaultConfiguration().getBounds().x))
-            .toArray(GraphicsDevice[]::new);
+            .map(graphicsDevice -> graphicsDevice.getDefaultConfiguration().getBounds())
+            .sorted(Comparator.comparingInt(a -> a.x))
+            .toArray(Rectangle[]::new);
     private static Display single_instance = null;
-
+    private final Robot robot;
     private Rectangle screenRectangle;
     private int nr = 0;
-    private final Robot robot;
 
     private Display() throws AWTException {
         robot = new Robot();
-        screenRectangle = devices[nr].getDefaultConfiguration().getBounds();
+        screenRectangle = devicesBounds[nr];
     }
 
     @SneakyThrows
     public static Display getInstance(int nr) {
-        if (single_instance == null){
+        if (single_instance == null) {
             single_instance = new Display();
         }
 
-        if(single_instance.getNr() != nr){
+        if (single_instance.getNr() != nr) {
             single_instance.setNr(nr);
         }
 
         return single_instance;
     }
 
-    private void setNr(int nr){
-        if (nr > devices.length) {
-            throw new IllegalArgumentException("Invalid display number");
-        }
+    public static int getDisplayNumbers() {
+        return devicesBounds.length;
+    }
 
-        this.nr = nr;
-        this.screenRectangle = devices[nr].getDefaultConfiguration().getBounds();
+    public static Rectangle[] getDevicesBounds() {
+        return devicesBounds;
+    }
+
+    public static Point getPointByScreen(Point point, int screenNr) {
+        Rectangle bounds = devicesBounds[screenNr];
+        int x = bounds.x;
+        int y = bounds.y;
+
+        return new Point(x + point.x, y + point.y);
     }
 
     public int getNr() {
         return nr;
     }
 
-    public static Point getPointByScreen(Point point, int screenNr) {
-        Rectangle bounds = devices[screenNr].getDefaultConfiguration().getBounds();
-        int x = bounds.x;
-        int y = bounds.y;
+    private void setNr(int nr) {
+        if (nr > devicesBounds.length) {
+            throw new IllegalArgumentException("Invalid display number");
+        }
 
-        return new Point(x + point.x, y + point.y);
+        this.nr = nr;
+        this.screenRectangle = devicesBounds[nr];
     }
 
     @Override

@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -18,6 +17,7 @@ public class RemoteImage {
     private static final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     private byte[] data;
     private long created;
+    private BufferedImage bufferedImage;
 
     @SneakyThrows
     public RemoteImage(BufferedImage bufferedImage) {
@@ -29,10 +29,13 @@ public class RemoteImage {
         byteArrayOutputStream.reset();
     }
 
-    public ImageIcon get() throws IOException {
+    public BufferedImage get() throws IOException {
+        if (bufferedImage != null) {
+            return bufferedImage;
+        }
+
         final InputStream is = new ByteArrayInputStream(data);
-        BufferedImage bi = ImageIO.read(is);
-        return new ImageIcon(bi);
+        return (bufferedImage = ImageIO.read(is));
     }
 
     public long getCreated() {

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.image.Display;
 import net.debreczeni.remotedesktop.model.Message;
 import net.debreczeni.remotedesktop.model.User;
+import net.debreczeni.remotedesktop.model.socket.RemoteDisplays;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
 import net.debreczeni.remotedesktop.model.socket.events.RemoteEvent;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
@@ -87,11 +88,14 @@ public class RServerController {
                     }
                 });
 
+
+        User user1 = SerializerUtil.fromString(client);
+
         // Callback to client, confirming connection
         requester.route("client-status")
                 .data("OPEN")
                 .retrieveFlux(String.class)
-                .doOnNext(s -> log.info("Client: {} Free Memory: {}.", client, s))
+                .doOnNext(s -> log.info("Client: {} Free Memory: {}.", user1.getName(), s))
                 .subscribe();
     }
 
@@ -109,6 +113,18 @@ public class RServerController {
         log.info("Request-response initiated by '{}' in the role '{}'", user.getUsername(), user.getAuthorities());
         // create a single Message and return it
         return Mono.just(new Message(SERVER, RESPONSE));
+    }
+
+    @PreAuthorize("hasRole('VIEW')")
+    @MessageMapping("displays")
+    Mono<RemoteDisplays> displays(@AuthenticationPrincipal UserDetails user) {
+        RemoteDisplays displays = new RemoteDisplays();
+
+        for (int i = 0; i < Display.getDisplayNumbers(); i++) {
+            displays.setImage(i, new RemoteImage(Display.getInstance(i).takeScreenshot()));
+        }
+
+        return Mono.just(displays);
     }
 
     /**
@@ -156,6 +172,7 @@ public class RServerController {
                 .interval(Duration.ofMillis(50))
                 .map(index -> new RemoteImage(display.takeScreenshot()));
     }
+
 
     /**
      * This @MessageMapping is intended to be used "stream <--> stream" style.
