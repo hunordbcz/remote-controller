@@ -66,7 +66,7 @@ public class RClientController {
 
     //    @ShellMethod("Login with your username and password.")
     @SneakyThrows
-    public void login(String username, String password) {
+    public void login(String host, String username, String password) {
         log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
         SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
         UsernamePasswordMetadata user = new UsernamePasswordMetadata(username, password);

@@ -11,7 +11,9 @@ public final class SerializerUtil {
         byte[] data = Base64.getDecoder().decode(content);
         try (ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data))) {
-            return (T) ois.readObject();
+            T object = (T) ois.readObject();
+            ois.reset();
+            return object;
         }
     }
 
@@ -19,8 +21,11 @@ public final class SerializerUtil {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(o);
-            return Base64.getEncoder().encodeToString(baos.toByteArray());
-        }catch (IOException e) {
+            String encodedString = Base64.getEncoder().encodeToString(baos.toByteArray());
+            baos.reset();
+            oos.reset();
+            return encodedString;
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

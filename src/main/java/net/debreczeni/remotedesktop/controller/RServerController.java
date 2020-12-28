@@ -165,7 +165,7 @@ public class RServerController {
     Flux<RemoteImage> imageStream(final int screenNr) {
         final Display display = Display.getInstance(screenNr);
         return Flux
-                .interval(Duration.ofMillis(50))
+                .interval(Duration.ofMillis(100))
                 .map(index -> new RemoteImage(display.takeScreenshot()));
     }
 
