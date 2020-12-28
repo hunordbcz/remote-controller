@@ -78,7 +78,7 @@ public class RClientController {
                         builder.encoder(new SimpleAuthenticationEncoder())
                 )
                 .rsocketConnector(connector -> connector.acceptor(responder))
-                .connectTcp("localhost", 7000)
+                .connectTcp(host, 7000)
                 .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
                 .doOnSuccess(data -> log.info(String.valueOf(data)))
                 .onErrorStop()
