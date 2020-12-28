@@ -1,16 +1,20 @@
 package net.debreczeni.remotedesktop.ui;
 
 import lombok.Data;
+import lombok.SneakyThrows;
+import net.debreczeni.remotedesktop.listeners.DisplaySelectionListener;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
 import net.debreczeni.remotedesktop.util.ImageUtil;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public class DisplayDetails extends JPanel implements MouseListener {
@@ -26,15 +30,29 @@ public class DisplayDetails extends JPanel implements MouseListener {
     private final int nr;
     private final RemoteImage image;
 
+    private final List<DisplaySelectionListener> displaySelectionListenerList;
+
     public DisplayDetails(int nr, RemoteImage image) throws IOException {
         this.nr = nr;
         this.image = image;
-        titledEtchedBorder = BorderFactory.createTitledBorder(etchedBorder, "Screen #" + nr);
-        titledRaisedBorder = BorderFactory.createTitledBorder(raisedBorder, "Screen #" + nr);
-        titledLoweredBorder = BorderFactory.createTitledBorder(loweredBorder, "Screen #" + nr);
-        titledEmptyBorder = BorderFactory.createTitledBorder(emptyBorder, "Screen #" + nr);
+        displaySelectionListenerList = new ArrayList<>();
+
+        titledEtchedBorder = BorderFactory.createTitledBorder(etchedBorder, getTitle());
+        titledRaisedBorder = BorderFactory.createTitledBorder(raisedBorder, getTitle());
+        titledLoweredBorder = BorderFactory.createTitledBorder(loweredBorder, getTitle());
+        titledEmptyBorder = BorderFactory.createTitledBorder(emptyBorder, getTitle());
 
         init();
+    }
+
+    public void addClickListener(DisplaySelectionListener displaySelectionListener){
+        displaySelectionListenerList.add(displaySelectionListener);
+    }
+
+    @SneakyThrows
+    private String getTitle(){
+        BufferedImage bufferedImage = image.get();
+        return "#" + nr + " ("+ bufferedImage.getWidth() + "x" + bufferedImage.getHeight() +")";
     }
 
     private void init() throws IOException {
@@ -42,7 +60,7 @@ public class DisplayDetails extends JPanel implements MouseListener {
         setVisible(true);
 
         JLabel image = new JLabel();
-        image.setIcon(new ImageIcon(ImageUtil.resizeImage(this.image.get(), 160, 90)));
+        image.setIcon(new ImageIcon(ImageUtil.resizeImage(this.image.get(), 240, 135))); //16:9 scale
         add(image);
         setBorder(titledEtchedBorder);
         addMouseListener(this);
@@ -50,7 +68,16 @@ public class DisplayDetails extends JPanel implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        displaySelectionListenerList.forEach(listener -> {
+            BufferedImage bufferedImage = null;
+            try {
+                bufferedImage = image.get();
+                listener.selected(nr, bufferedImage.getWidth(), bufferedImage.getHeight());
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
 
+        });
     }
 
     @Override

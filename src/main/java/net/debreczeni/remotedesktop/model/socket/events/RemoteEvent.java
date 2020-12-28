@@ -3,9 +3,11 @@ package net.debreczeni.remotedesktop.model.socket.events;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
-public abstract class RemoteEvent {
+public class RemoteEvent implements Serializable {
     public enum EventType {
         KEYBOARD_PRESS,
         KEYBOARD_RELEASE,

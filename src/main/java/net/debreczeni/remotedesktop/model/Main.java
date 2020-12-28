@@ -77,7 +77,7 @@ public class Main extends JFrame {
 
                 try{
                     rSocketShellClient.login("control", inputPasswordText);
-                    rSocketShellClient.stream(0);
+                    rSocketShellClient.screenShare(0, 500, 500);
                 }catch (RejectedSetupException e){
                     JOptionPane.showMessageDialog(null, "Wrong Password", "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -117,7 +117,7 @@ public class Main extends JFrame {
 
     private void createElements() {
         startConnection = new JButton("Start Connection");
-        inputAddress = new JTextField("192.168.0.102",16);
+        inputAddress = new JTextField("localhost",16);
         inputPassword = new JPasswordField(User.getInstance().getControlToken(), 6);
     }
 

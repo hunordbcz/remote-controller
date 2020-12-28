@@ -1,6 +1,5 @@
 package net.debreczeni.remotedesktop.model.socket.events;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,11 +7,13 @@ import java.awt.*;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
 public class MouseMovementEvent extends RemoteEvent {
-    private Point point;
+    private final int screenNr;
+    private final Point point;
 
-    public MouseMovementEvent() {
+    public MouseMovementEvent(Point point, int screenNr) {
         super(EventType.MOUSE_MOVE);
+        this.point = point;
+        this.screenNr = screenNr;
     }
 }

@@ -1,12 +1,15 @@
 package net.debreczeni.remotedesktop.controller;
 
+import io.netty.util.internal.StringUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.debreczeni.remotedesktop.factory.AbstractEventFactory;
 import net.debreczeni.remotedesktop.image.Display;
 import net.debreczeni.remotedesktop.model.Message;
 import net.debreczeni.remotedesktop.model.User;
 import net.debreczeni.remotedesktop.model.socket.RemoteDisplays;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
+import net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent;
 import net.debreczeni.remotedesktop.model.socket.events.RemoteEvent;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
 import org.reactivestreams.Subscriber;
@@ -23,6 +26,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PreDestroy;
+import java.io.IOException;
+import java.rmi.Remote;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,13 +132,7 @@ public class RServerController {
         return Mono.just(displays);
     }
 
-    /**
-     * This @MessageMapping is intended to be used "fire --> forget" style.
-     * When a new CommandRequest is received, nothing is returned (void)
-     *
-     * @param request
-     * @return
-     */
+
     @PreAuthorize("hasRole('USER')")
     @MessageMapping("fire-and-forget")
     public Mono<Void> fireAndForget(final Message request, @AuthenticationPrincipal UserDetails user) {
@@ -142,17 +141,14 @@ public class RServerController {
         return Mono.empty();
     }
 
-    /**
-     * This @MessageMapping is intended to be used "fire --> forget" style.
-     * When a new CommandRequest is received, nothing is returned (void)
-     *
-     * @param request
-     * @return
-     */
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CONTROL')")
     @MessageMapping("remote-event")
-    public Mono<Void> remoteEvent(final RemoteEvent remoteEvent, @AuthenticationPrincipal UserDetails user) {
-        log.info("Received remoteEvent request: {}", remoteEvent);
+    public Mono<Void> remoteEvent(final String remoteEvent, @AuthenticationPrincipal UserDetails user) throws IOException, ClassNotFoundException {
+        RemoteEvent event = SerializerUtil.fromString(remoteEvent);
+        AbstractEventFactory factory = AbstractEventFactory.getFactory(event);
+
+        factory.process();
+        log.info("Received remoteEvent request: {}", (RemoteEvent)SerializerUtil.fromString(remoteEvent));
         log.info("remoteEvent initiated by '{}' in the role '{}'", user.getUsername(), user.getAuthorities());
         return Mono.empty();
     }

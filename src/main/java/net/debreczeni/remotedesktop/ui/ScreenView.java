@@ -4,6 +4,7 @@ import net.debreczeni.remotedesktop.model.socket.RemoteImage;
 import net.debreczeni.remotedesktop.util.ImageUtil;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
 
 public class ScreenView extends JLabel {
@@ -21,10 +22,18 @@ public class ScreenView extends JLabel {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                setIcon(new ImageIcon(ImageUtil.resizeImage(image.get(), getWidth(), getHeight())));
+                setIcon(new ImageIcon(image.get()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        ImageIcon icon = (ImageIcon) getIcon();
+        if (icon != null) {
+            ImageUtil.drawScaledImage(icon.getImage(), this, g, true);
+        }
     }
 }

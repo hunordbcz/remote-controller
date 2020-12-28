@@ -31,8 +31,8 @@ public class RSocketSecurityConfig {
     @Bean
     MapReactiveUserDetailsService authentication() {
         UserDetails admin = User.withDefaultPasswordEncoder()
-                .username("admin")
-                .password("admin")
+                .username("a")
+                .password("a")
                 .roles("VIEW", "CONTROL")
                 .build();
 

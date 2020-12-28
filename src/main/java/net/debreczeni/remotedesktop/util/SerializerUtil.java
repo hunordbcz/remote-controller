@@ -15,11 +15,15 @@ public final class SerializerUtil {
         }
     }
 
-    public static String toString(Serializable o) throws IOException {
+    public static String toString(Serializable o) {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              ObjectOutputStream oos = new ObjectOutputStream(baos)) {
             oos.writeObject(o);
             return Base64.getEncoder().encodeToString(baos.toByteArray());
+        }catch (IOException e) {
+            e.printStackTrace();
         }
+
+        return null;
     }
 }
