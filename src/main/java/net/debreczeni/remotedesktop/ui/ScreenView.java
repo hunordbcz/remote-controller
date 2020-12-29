@@ -9,17 +9,13 @@ import java.io.IOException;
 
 public class ScreenView extends JLabel {
 
+    private Rectangle imageRectangle;
+
     public ScreenView() {
         setVisible(true);
     }
 
-    public void updateImage(ImageIcon image) {
-//        SwingUtilities.invokeLater(() -> setIcon(image));
-        setIcon(image);
-    }
-
     public void updateImage(RemoteImage image) {
-
         SwingUtilities.invokeLater(() -> {
             try {
                 setIcon(new ImageIcon(image.get()));
@@ -33,7 +29,25 @@ public class ScreenView extends JLabel {
     protected void paintComponent(Graphics g) {
         ImageIcon icon = (ImageIcon) getIcon();
         if (icon != null) {
-            ImageUtil.drawScaledImage(icon.getImage(), this, g, true);
+            imageRectangle = ImageUtil.drawScaledImage(icon.getImage(), this, g, true);
         }
+    }
+
+    public Point getPointOnImage(Point point) {
+        if (point.x < imageRectangle.x ||
+                point.y < imageRectangle.y ||
+                point.x > (imageRectangle.x + imageRectangle.width) ||
+                point.y > (imageRectangle.y + imageRectangle.height)) {
+            return null;
+        }
+
+        return new Point(point.x - imageRectangle.x, point.y - imageRectangle.y);
+    }
+
+    public Point getPointOnScreen(Point pointOnImage, Dimension nativeSize) {
+        int x = (nativeSize.width * pointOnImage.x) / imageRectangle.width;
+        int y = (nativeSize.height * pointOnImage.y) / imageRectangle.height;
+
+        return new Point(x, y);
     }
 }

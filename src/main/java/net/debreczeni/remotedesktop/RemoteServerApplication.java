@@ -14,7 +14,6 @@ public class RemoteServerApplication {
         var context = builder.headless(false).run(args);
 
         EventQueue.invokeLater(() -> {
-
             var ex = context.getBean(Main.class);
             ex.setVisible(true);
         });
