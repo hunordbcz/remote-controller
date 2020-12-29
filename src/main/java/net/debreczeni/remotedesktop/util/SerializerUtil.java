@@ -11,9 +11,7 @@ public final class SerializerUtil {
         byte[] data = Base64.getDecoder().decode(content);
         try (ObjectInputStream ois = new ObjectInputStream(
                 new ByteArrayInputStream(data))) {
-            T object = (T) ois.readObject();
-            ois.reset();
-            return object;
+            return (T) ois.readObject();
         }
     }
 

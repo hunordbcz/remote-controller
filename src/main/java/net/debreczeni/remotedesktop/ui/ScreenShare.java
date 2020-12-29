@@ -1,16 +1,18 @@
 package net.debreczeni.remotedesktop.ui;
 
-import net.debreczeni.remotedesktop.adapter.MouseAdapter;
 import net.debreczeni.remotedesktop.listeners.ScreenShareEventListener;
 import net.debreczeni.remotedesktop.model.socket.RemoteImage;
 import net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent;
+import net.debreczeni.remotedesktop.model.socket.events.MouseEvent;
 import net.debreczeni.remotedesktop.model.socket.events.MouseMovementEvent;
 import net.debreczeni.remotedesktop.model.socket.events.RemoteEvent;
-import net.debreczeni.remotedesktop.model.socket.events.MouseEvent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,26 +23,47 @@ public class ScreenShare extends JFrame {
     private final String serverName;
     private final Container contentPane;
     private final int screenNr;
+    private final Dimension nativeSize;
     private ScreenView screenView;
     private boolean first = true;
+    private boolean mouseListenerEnabled;
+    private boolean keyboardListenerEnabled;
 
-    public ScreenShare(String serverName, int screenNr, boolean allowControl) {
+    private JButton quitButton;
+    private JButton nativeResolutionButton;
+    private JButton keyboardEnableButton;
+    private JButton mouseEnableButton;
+
+    public ScreenShare(String serverName, int screenNr, Dimension dimension, boolean allowControl) {
         this.serverName = serverName;
         this.screenNr = screenNr;
         this.eventListeners = new ArrayList<>();
         this.contentPane = getContentPane();
+        this.nativeSize = dimension;
 
         initUI();
         initComponents();
+        initListeners();
 
         if (allowControl) {
             initControlListeners();
+            mouseListenerEnabled = true;
+            mouseEnableButton.setBackground(Color.GREEN);
+
+            keyboardListenerEnabled = true;
+            keyboardEnableButton.setBackground(Color.GREEN);
+        } else {
+            mouseListenerEnabled = false;
+            mouseEnableButton.setEnabled(false);
+
+            keyboardListenerEnabled = false;
+            keyboardEnableButton.setEnabled(false);
         }
 
         EventQueue.invokeLater(() -> setVisible(true));
     }
 
-    public void initListeners(){
+    public void initListeners() {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
@@ -62,7 +85,7 @@ public class ScreenShare extends JFrame {
             }
         });
 
-        addMouseListener(new java.awt.event.MouseAdapter() {
+        screenView.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
                 notifyRemoteEvent(new MouseEvent(MouseEvent.TYPE.PRESS, e.getButton()));
@@ -72,21 +95,40 @@ public class ScreenShare extends JFrame {
             public void mouseReleased(java.awt.event.MouseEvent e) {
                 notifyRemoteEvent(new MouseEvent(MouseEvent.TYPE.RELEASE, e.getButton()));
             }
+        });
 
+        screenView.addMouseMotionListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseMoved(java.awt.event.MouseEvent e) {
-                notifyRemoteEvent(new MouseMovementEvent(e.getPoint(), screenNr));
+                Point pointOnImage = screenView.getPointOnImage(e.getPoint());
+                if (pointOnImage == null) {
+                    return;
+                }
+                Point pointOnScreen = screenView.getPointOnScreen(pointOnImage, nativeSize);
+//                System.err.println(pointOnImage);
+                System.err.println(pointOnScreen);
+
+                notifyRemoteEvent(new MouseMovementEvent(pointOnScreen, screenNr));
             }
         });
     }
 
     private void notifyRemoteEvent(RemoteEvent remoteEvent) {
+        if (remoteEvent instanceof KeyboardEvent) {
+            if (!keyboardListenerEnabled) {
+                return;
+            }
+        } else {
+            if (!mouseListenerEnabled) {
+                return;
+            }
+        }
+
         eventListeners.forEach(eventListener -> eventListener.newRemoteEvent(remoteEvent));
     }
 
     private void notifyQuit() {
         eventListeners.forEach(ScreenShareEventListener::quitButtonPressed);
-        dispose();
     }
 
     private void initUI() {
@@ -99,16 +141,53 @@ public class ScreenShare extends JFrame {
     }
 
     private void initComponents() {
-        JButton button = new JButton("Quit");
-        button.addActionListener(action -> notifyQuit());
-        contentPane.add(button, BorderLayout.PAGE_START);
+        JPanel pageStartPanel = new JPanel();
+        pageStartPanel.setLayout(new BoxLayout(pageStartPanel, BoxLayout.LINE_AXIS));
+        contentPane.add(pageStartPanel, BorderLayout.PAGE_START);
+
+        quitButton = new JButton("Quit");
+        quitButton.addActionListener(action -> dispose());
+        pageStartPanel.add(quitButton);
+
+        nativeResolutionButton = new JButton("Set Native Resolution");
+        nativeResolutionButton.addActionListener(action -> {
+            setExtendedState(Frame.NORMAL);
+//            validate();
+//            repaint();
+            pack();
+        });
+        pageStartPanel.add(nativeResolutionButton);
+
+        keyboardEnableButton = new JButton("Toggle Keyboard Events");
+        keyboardEnableButton.addActionListener(action -> toggleKeyboardListener());
+        pageStartPanel.add(keyboardEnableButton);
+
+        mouseEnableButton = new JButton("Toggle Mouse Events");
+        mouseEnableButton.addActionListener(action -> toggleMouseListener());
+        pageStartPanel.add(mouseEnableButton);
 
         screenView = new ScreenView();
         contentPane.add(screenView, BorderLayout.CENTER);
+    }
 
-        MouseAdapter mouseAdapter = new MouseAdapter(screenView);
-        screenView.addMouseMotionListener(mouseAdapter);
-        screenView.addMouseWheelListener(mouseAdapter);
+    private void toggleMouseListener() {
+        if (mouseListenerEnabled) {
+            mouseListenerEnabled = false;
+            mouseEnableButton.setBackground(Color.RED);
+        } else {
+            mouseListenerEnabled = true;
+            mouseEnableButton.setBackground(Color.GREEN);
+        }
+    }
+
+    private void toggleKeyboardListener() {
+        if (keyboardListenerEnabled) {
+            keyboardListenerEnabled = false;
+            keyboardEnableButton.setBackground(Color.RED);
+        } else {
+            keyboardListenerEnabled = true;
+            keyboardEnableButton.setBackground(Color.GREEN);
+        }
     }
 
 

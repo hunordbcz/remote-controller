@@ -4,8 +4,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public final class ImageUtil {
-    private final static double widthToHeightRatio = 0.5625D;
-
     private ImageUtil() {
     }
 
@@ -18,7 +16,7 @@ public final class ImageUtil {
         return resizedImage;
     }
 
-    public static void drawScaledImage(Image image, Component canvas, Graphics g, boolean oversize) {
+    public static Rectangle drawScaledImage(Image image, Component canvas, Graphics g, boolean oversize) {
         int imgWidth = image.getWidth(null);
         int imgHeight = image.getHeight(null);
 
@@ -36,7 +34,7 @@ public final class ImageUtil {
 
         if (imgWidth < canvasWidth && imgHeight < canvasHeight && !oversize) {
             // the image is smaller than the canvas
-            x1 = (canvasWidth - imgWidth)  / 2;
+            x1 = (canvasWidth - imgWidth) / 2;
             y1 = (canvasHeight - imgHeight) / 2;
             x2 = imgWidth + x1;
             y2 = imgHeight + y1;
@@ -58,5 +56,6 @@ public final class ImageUtil {
         }
 
         g.drawImage(image, x1, y1, x2, y2, 0, 0, imgWidth, imgHeight, null);
+        return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 }

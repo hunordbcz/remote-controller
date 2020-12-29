@@ -68,7 +68,7 @@ public class RClientController {
     @SneakyThrows
     public void login(String host, String username, String password) {
         log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
-        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
+//        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
         UsernamePasswordMetadata user = new UsernamePasswordMetadata(username, password);
         this.rsocketRequester = rsocketRequesterBuilder
                 .setupRoute("shell-client")
@@ -77,8 +77,8 @@ public class RClientController {
                 .rsocketStrategies(builder ->
                         builder.encoder(new SimpleAuthenticationEncoder())
                 )
-                .rsocketConnector(connector -> connector.acceptor(responder))
-                .connectTcp("localhost", 7000)
+//                .rsocketConnector(connector -> connector.acceptor(responder))
+                .connectTcp("192.168.0.102", 7000)
                 .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
                 .doOnSuccess(data -> log.info(String.valueOf(data)))
                 .onErrorStop()
@@ -106,13 +106,11 @@ public class RClientController {
 
     public void quitScreenShare() {
         if (userCheck() && screenShareDisposable != null) {
-            log.info("Stopping screen share.");
             screenShareDisposable.dispose();
             displays();
         }
     }
 
-    //    @ShellMethod("get displays")
     public void displays() {
         if (!userCheck()) {
             return;
@@ -158,7 +156,7 @@ public class RClientController {
             return;
         }
 
-        final ScreenShare screenShare = new ScreenShare("Test server", screenNr,true);
+        final ScreenShare screenShare = new ScreenShare("Test server", screenNr, new Dimension(width, height), true);
         screenShare.addEventListener(new ScreenShareEventListener() {
             @Override
             public void newRemoteEvent(RemoteEvent event) {
@@ -179,11 +177,12 @@ public class RClientController {
     }
 
     public void sendRemoteEvent(RemoteEvent remoteEvent) {
+        log.info("Got {}", remoteEvent);
         if (!userCheck() || screenShareDisposable.isDisposed()) {
             return;
         }
 
-        log.info("\nSending {}", remoteEvent);
+        log.info("Sending {}", remoteEvent);
         rsocketRequester
                 .route("remote-event")
                 .data(Objects.requireNonNull(SerializerUtil.toString(remoteEvent)))

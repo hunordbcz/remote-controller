@@ -68,10 +68,10 @@ public class RServerController {
                 .doOnError(error -> {
                     log.warn("Channel to client {} CLOSED", client);
                 })
-//                .doFinally(consumer -> {
-//                    CLIENTS.remove(requester);
-//                    log.info("Client {} DISCONNECTED", client);
-//                })
+                .doFinally(consumer -> {
+                    CLIENTS.remove(requester);
+                    log.info("Client {} DISCONNECTED", client);
+                })
                 .subscribe(new Subscriber<Void>() {
                     @Override
                     public void onSubscribe(Subscription subscription) {
@@ -97,11 +97,11 @@ public class RServerController {
         User user1 = SerializerUtil.fromString(client);
 
         // Callback to client, confirming connection
-        requester.route("client-status")
-                .data("OPEN")
-                .retrieveFlux(String.class)
-                .doOnNext(s -> log.info("Client: {} Free Memory: {}.", user1.getName(), s))
-                .subscribe();
+//        requester.route("client-status")
+//                .data("OPEN")
+//                .retrieveFlux(String.class)
+//                .doOnNext(s -> log.info("Client: {} Free Memory: {}.", user1.getName(), s))
+//                .subscribe();
     }
 
     /**
