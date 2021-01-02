@@ -12,8 +12,12 @@ public class MouseEventFactory implements AbstractEventFactory {
     @Override
     public void process() {
         switch (event.getType()) {
-            case PRESS -> SingletonRobot.getInstance().mousePress(event.getButton());
-            case RELEASE -> SingletonRobot.getInstance().mouseRelease(event.getButton());
+            case PRESS:
+                SingletonRobot.getInstance().mousePress(event.getButton());
+                break;
+            case RELEASE:
+                SingletonRobot.getInstance().mouseRelease(event.getButton());
+                break;
         }
     }
 }

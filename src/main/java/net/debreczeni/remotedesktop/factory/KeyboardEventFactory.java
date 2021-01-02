@@ -12,8 +12,12 @@ public class KeyboardEventFactory implements AbstractEventFactory {
     @Override
     public void process() {
         switch (event.getType()) {
-            case PRESS -> SingletonRobot.getInstance().keyPress(event.getKeyCode());
-            case RELEASE -> SingletonRobot.getInstance().keyRelease(event.getKeyCode());
+            case PRESS:
+                SingletonRobot.getInstance().keyPress(event.getKeyCode());
+                break;
+            case RELEASE:
+                SingletonRobot.getInstance().keyRelease(event.getKeyCode());
+                break;
         }
     }
 }

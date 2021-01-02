@@ -1,8 +1,8 @@
 package net.debreczeni.remotedesktop.controller;
 
-import io.rsocket.SocketAcceptor;
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.SneakyThrows;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.listeners.DisplaySelectionListener;
 import net.debreczeni.remotedesktop.listeners.ScreenShareEventListener;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
-import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.stereotype.Component;
@@ -28,26 +27,24 @@ import reactor.core.Disposable;
 import javax.annotation.PreDestroy;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.Objects;
-import java.util.UUID;
 
 @Slf4j
 @Component
-//@ShellComponent
 public class RClientController {
 
-    private static final String CLIENT = "Client";
-    private static final String REQUEST = "Request";
-    private static final String CLIENT_ID = UUID.randomUUID().toString();
+
     private static final MimeType SIMPLE_AUTH = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
-    private static Disposable disposable;
 
     private static volatile Disposable screenShareDisposable;
 
     private RSocketRequester rsocketRequester;
     private RSocketRequester.Builder rsocketRequesterBuilder;
     private RSocketStrategies rsocketStrategies;
+    private String host;
 
     @Autowired
     public RClientController(RSocketRequester.Builder builder,
@@ -57,63 +54,68 @@ public class RClientController {
     }
 
     private boolean userCheck() {
-        if (null == this.rsocketRequester || this.rsocketRequester.rsocket().isDisposed()) {
-            log.warn("Please log in to the server first");
-            return false;
-        }
-        return true;
+        return null != this.rsocketRequester && !this.rsocketRequester.rsocket().isDisposed();
     }
 
-    //    @ShellMethod("Login with your username and password.")
     @SneakyThrows
     public void login(String host, String username, String password) {
-        log.info("Connecting using client ID: {} and username: {}", CLIENT_ID, username);
-//        SocketAcceptor responder = RSocketMessageHandler.responder(rsocketStrategies, new PingMessage());
+        this.host = host;
+        log.info("Connecting with {}", username);
         UsernamePasswordMetadata user = new UsernamePasswordMetadata(username, password);
         this.rsocketRequester = rsocketRequesterBuilder
-                .setupRoute("shell-client")
+                .setupRoute("login-server")
                 .setupData(Objects.requireNonNull(SerializerUtil.toString(User.getInstance())))
                 .setupMetadata(user, SIMPLE_AUTH)
                 .rsocketStrategies(builder ->
                         builder.encoder(new SimpleAuthenticationEncoder())
                 )
-
-//                .rsocketConnector(connector -> connector.acceptor(responder))
-                .connectTcp(host, 7000)
-                .doOnError(error -> JOptionPane.showMessageDialog(null, error.getMessage(), "Error", JOptionPane.ERROR_MESSAGE))
-                .doOnSuccess(data -> log.info(String.valueOf(data)))
+                .connectTcp(host, env)
+                .doOnError(error ->
+                        SwingUtilities.invokeLater(()-> JOptionPane.showMessageDialog(null, error.getMessage(), "Error on connection", JOptionPane.ERROR_MESSAGE))
+                )
                 .onErrorStop()
                 .block();
 
         this.rsocketRequester.rsocket()
                 .onClose()
                 .doOnError(error -> log.warn("Connection CLOSED"))
-                .doFinally(consumer -> log.info("Client DISCONNECTED"))
+                .doFinally(consumer -> log.info("Disconnected from server"))
                 .subscribe();
     }
 
     @PreDestroy
-    public void preDestroy(){
-        this.quitScreenShare();
+    public void preDestroy() {
+        if (!userCheck()) {
+            return;
+        }
+        screenShareDisposable.dispose();
         this.logout();
     }
 
     public void logout() {
         if (userCheck()) {
             this.rsocketRequester.rsocket().dispose();
+            this.host = "UNKWN";
             log.info("Logged out.");
+        } else {
+            log.warn("Please log in to the server first");
         }
     }
 
-    public void quitScreenShare() {
+
+
+    public void quitScreenShare(boolean allowControl) {
         if (userCheck() && screenShareDisposable != null) {
             screenShareDisposable.dispose();
-            displays();
+            displays(allowControl);
+        } else {
+            log.warn("Please log in to the server first");
         }
     }
 
-    public void displays() {
+    public void displays(boolean allowControl) {
         if (!userCheck()) {
+            log.warn("Please log in to the server first");
             return;
         }
 
@@ -124,15 +126,12 @@ public class RClientController {
 
         JFrame jFrame = new JFrame("Choose display");
         jFrame.setLayout(new FlowLayout());
-
-        DisplaySelectionListener displaySelectionListener = new DisplaySelectionListener() {
-            @Override
-            public void selected(int selectionNr, int width, int height) {
-                jFrame.dispose();
-                screenShare(selectionNr, width, height);
-            }
+        DisplaySelectionListener displaySelectionListener = (selectionNr, width, height) -> {
+            jFrame.dispose();
+            screenShare(selectionNr, width, height, allowControl);
         };
 
+        assert displays != null;
         displays.getScreenshotsByDisplay().forEach((nr, image) -> {
             try {
                 DisplayDetails displayDetails = new DisplayDetails(nr, image);
@@ -142,22 +141,20 @@ public class RClientController {
                 e.printStackTrace();
             }
         });
-//        jFrame.setSize(500,110);
+
         jFrame.revalidate();
         jFrame.pack();
         jFrame.repaint();
 
         jFrame.setVisible(true);
-
-//        return displays;
     }
 
-    public void screenShare(final int screenNr, int width, int height) {
+    public void screenShare(final int screenNr, int width, int height, boolean allowControl) {
         if (!userCheck()) {
             return;
         }
 
-        final ScreenShare screenShare = new ScreenShare("Test server", screenNr, new Dimension(width, height), true);
+        final ScreenShare screenShare = new ScreenShare(host + (allowControl ? " - CONTROL" : " - VIEW"), screenNr, new Dimension(width, height), allowControl);
         screenShare.addEventListener(new ScreenShareEventListener() {
             @Override
             public void newRemoteEvent(RemoteEvent event) {
@@ -166,7 +163,7 @@ public class RClientController {
 
             @Override
             public void quitButtonPressed() {
-                quitScreenShare();
+                quitScreenShare(allowControl);
             }
         });
 
@@ -178,7 +175,6 @@ public class RClientController {
     }
 
     public void sendRemoteEvent(RemoteEvent remoteEvent) {
-        log.info("Got {}", remoteEvent);
         if (!userCheck() || screenShareDisposable.isDisposed()) {
             return;
         }

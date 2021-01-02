@@ -105,8 +105,6 @@ public class ScreenShare extends JFrame {
                     return;
                 }
                 Point pointOnScreen = screenView.getPointOnScreen(pointOnImage, nativeSize);
-//                System.err.println(pointOnImage);
-                System.err.println(pointOnScreen);
 
                 notifyRemoteEvent(new MouseMovementEvent(pointOnScreen, screenNr));
             }
@@ -152,8 +150,6 @@ public class ScreenShare extends JFrame {
         nativeResolutionButton = new JButton("Set Native Resolution");
         nativeResolutionButton.addActionListener(action -> {
             setExtendedState(Frame.NORMAL);
-//            validate();
-//            repaint();
             pack();
         });
         pageStartPanel.add(nativeResolutionButton);

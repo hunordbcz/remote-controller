@@ -1,5 +1,9 @@
 package net.debreczeni.remotedesktop.configs;
 
+import net.debreczeni.remotedesktop.security.PasswordHandler;
+import net.debreczeni.remotedesktop.security.Pinblock;
+import net.debreczeni.remotedesktop.security.TripleDes;
+import net.debreczeni.remotedesktop.util.InetAddress;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -29,25 +33,21 @@ public class RSocketSecurityConfig {
 
     @Bean
     MapReactiveUserDetailsService authentication() {
-        UserDetails admin = User.withDefaultPasswordEncoder()
-                .username("a")
-                .password("a")
-                .roles("VIEW", "CONTROL")
-                .build();
+        PasswordHandler passwordHandler = new PasswordHandler();
 
         UserDetails view = User.withDefaultPasswordEncoder()
                 .username("view")
-                .password(net.debreczeni.remotedesktop.model.User.getInstance().getViewToken())
+                .password(passwordHandler.getEncryptedViewPin())
                 .roles("VIEW")
                 .build();
 
         UserDetails control = User.withDefaultPasswordEncoder()
                 .username("control")
-                .password(net.debreczeni.remotedesktop.model.User.getInstance().getControlToken())
+                .password(passwordHandler.getEncryptedControlPin())
                 .roles("VIEW", "CONTROL")
                 .build();
 
-        return new MapReactiveUserDetailsService(view, control, admin);
+        return new MapReactiveUserDetailsService(view, control);
     }
 
     @Bean

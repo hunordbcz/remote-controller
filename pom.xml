@@ -14,7 +14,7 @@
     <description>Remote Desktop Connection Server with RSocket</description>
 
     <properties>
-        <java.version>14</java.version>
+        <java.version>8</java.version>
     </properties>
 
     <dependencies>
@@ -68,7 +68,13 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
 
-<!--        <dependency>-->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.11</version>
+        </dependency>
+
+        <!--        <dependency>-->
 <!--            <groupId>org.springframework.shell</groupId>-->
 <!--            <artifactId>spring-shell-starter</artifactId>-->
 <!--            <version>2.0.0.RELEASE</version>-->
@@ -93,8 +99,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

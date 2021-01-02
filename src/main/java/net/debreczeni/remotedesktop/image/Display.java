@@ -41,10 +41,6 @@ public class Display implements Imageable {
         return devicesBounds.length;
     }
 
-    public static Rectangle[] getDevicesBounds() {
-        return devicesBounds;
-    }
-
     public static Point getPointByScreen(Point point, int screenNr) {
         Rectangle bounds = devicesBounds[screenNr];
         int x = bounds.x;

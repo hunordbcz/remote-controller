@@ -19,8 +19,4 @@ public class RemoteDisplays implements Serializable {
     public void setImage(int nr, RemoteImage image) {
         screenshotsByDisplay.put(nr, image);
     }
-
-    public RemoteImage getImage(int nr) {
-        return screenshotsByDisplay.get(nr);
-    }
 }

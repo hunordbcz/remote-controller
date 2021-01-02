@@ -1,9 +1,11 @@
 package net.debreczeni.remotedesktop;
 
-import net.debreczeni.remotedesktop.model.Main;
+import net.debreczeni.remotedesktop.ui.Main;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
+import javax.naming.Context;
 import java.awt.*;
 
 @SpringBootApplication
@@ -11,11 +13,11 @@ public class RemoteServerApplication {
 
     public static void main(String[] args) {
         SpringApplicationBuilder builder = new SpringApplicationBuilder(RemoteServerApplication.class);
-        var context = builder.headless(false).run(args);
+        ConfigurableApplicationContext context = builder.headless(false).run(args);
 
         EventQueue.invokeLater(() -> {
-            var ex = context.getBean(Main.class);
-            ex.setVisible(true);
+            Main main = context.getBean(Main.class);
+            main.setVisible(true);
         });
     }
 

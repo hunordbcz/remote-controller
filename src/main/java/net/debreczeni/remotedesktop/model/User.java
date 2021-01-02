@@ -6,6 +6,7 @@ import net.debreczeni.remotedesktop.util.InetAddress;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.Serializable;
+import java.util.Random;
 
 @Getter
 public class User implements Serializable {
@@ -16,9 +17,10 @@ public class User implements Serializable {
     private final String controlToken;
 
     private User() {
+        final Random random = new Random();
         name = InetAddress.getHostName();
-        viewToken = RandomStringUtils.randomAlphabetic(LOGIN_TOKEN_LENGTH);
-        controlToken = RandomStringUtils.randomAlphabetic(LOGIN_TOKEN_LENGTH);
+        viewToken = String.valueOf(random.nextInt(90000) + 10000);
+        controlToken = String.valueOf(random.nextInt(90000) + 10000);
     }
 
     private static User single_instance = null;
