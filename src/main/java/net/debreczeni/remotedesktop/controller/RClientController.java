@@ -2,7 +2,6 @@ package net.debreczeni.remotedesktop.controller;
 
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import net.debreczeni.remotedesktop.listeners.DisplaySelectionListener;
 import net.debreczeni.remotedesktop.listeners.ScreenShareEventListener;
@@ -15,6 +14,7 @@ import net.debreczeni.remotedesktop.ui.ScreenShare;
 import net.debreczeni.remotedesktop.util.SerializerUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
@@ -36,6 +36,8 @@ import java.util.Objects;
 @Component
 public class RClientController {
 
+    @Value( "${spring.rsocket.server.port}" )
+    private int serverPort;
 
     private static final MimeType SIMPLE_AUTH = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
 
@@ -69,7 +71,7 @@ public class RClientController {
                 .rsocketStrategies(builder ->
                         builder.encoder(new SimpleAuthenticationEncoder())
                 )
-                .connectTcp(host, env)
+                .connectTcp(host, serverPort)
                 .doOnError(error ->
                         SwingUtilities.invokeLater(()-> JOptionPane.showMessageDialog(null, error.getMessage(), "Error on connection", JOptionPane.ERROR_MESSAGE))
                 )
