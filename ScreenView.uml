@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>net.debreczeni.remotedesktop.ui.ScreenView</OriginalElement>
+  <nodes>
+    <node x="1546.5" y="190.0">net.debreczeni.remotedesktop.model.socket.events.MouseEvent</node>
+    <node x="1156.0" y="580.0">net.debreczeni.remotedesktop.util.SingletonRobot</node>
+    <node x="740.0" y="505.0">net.debreczeni.remotedesktop.factory.MouseEventFactory</node>
+    <node x="1374.5" y="190.0">net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent</node>
+    <node x="325.0" y="580.0">net.debreczeni.remotedesktop.listeners.DisplaySelectionListener</node>
+    <node x="134.5" y="190.0">net.debreczeni.remotedesktop.ui.Main</node>
+    <node x="686.5" y="190.0">net.debreczeni.remotedesktop.ui.ScreenView</node>
+    <node x="244.0" y="505.0">net.debreczeni.remotedesktop.factory.KeyboardEventFactory</node>
+    <node x="1687.0" y="425.0">net.debreczeni.remotedesktop.image.Display</node>
+    <node x="895.0" y="580.0">net.debreczeni.remotedesktop.configs.RSocketSecurityConfig</node>
+    <node x="1679.0" y="345.0">net.debreczeni.remotedesktop.image.Imageable</node>
+    <node x="190.5" y="110.0">javax.swing.JFrame</node>
+    <node x="530.5" y="110.0">java.awt.event.MouseListener</node>
+    <node x="234.5" y="190.0">net.debreczeni.remotedesktop.ui.ScreenShare</node>
+    <node x="1190.5" y="110.0">net.debreczeni.remotedesktop.model.socket.events.RemoteEvent</node>
+    <node x="969.0" y="425.0">net.debreczeni.remotedesktop.controller.RClientController</node>
+    <node x="10.5" y="110.0">net.debreczeni.remotedesktop.model.socket.RemoteDisplays</node>
+    <node x="534.5" y="0.0">java.io.Serializable</node>
+    <node x="1402.0" y="425.0">net.debreczeni.remotedesktop.RemoteServerApplication</node>
+    <node x="1173.0" y="425.0">net.debreczeni.remotedesktop.controller.RServerController</node>
+    <node x="414.5" y="110.0">javax.swing.JPanel</node>
+    <node x="1361.0" y="580.0">net.debreczeni.remotedesktop.util.SerializerUtil</node>
+    <node x="1674.0673076923076" y="0.0">net.debreczeni.remotedesktop.security.PasswordHandler</node>
+    <node x="0.0" y="580.0">net.debreczeni.remotedesktop.configs.RSocketServerResumptionConfig</node>
+    <node x="1607.75" y="270.0">net.debreczeni.remotedesktop.model.socket.events.MouseEvent.TYPE</node>
+    <node x="454.5" y="190.0">net.debreczeni.remotedesktop.ui.DisplayDetails</node>
+    <node x="1698.0673076923076" y="110.0">net.debreczeni.remotedesktop.security.PasswordHandler.TYPE</node>
+    <node x="1099.0" y="345.0">org.springframework.stereotype.Controller</node>
+    <node x="0.0" y="655.0">net.debreczeni.remotedesktop.util.InetAddress</node>
+    <node x="1566.0" y="580.0">net.debreczeni.remotedesktop.model.socket.RemoteImage</node>
+    <node x="372.0" y="345.0">java.lang.FunctionalInterface</node>
+    <node x="610.0" y="580.0">net.debreczeni.remotedesktop.listeners.ScreenShareEventListener</node>
+    <node x="974.5" y="190.0">net.debreczeni.remotedesktop.model.socket.events.MouseWheelEvent</node>
+    <node x="472.0" y="505.0">net.debreczeni.remotedesktop.factory.MouseMovementEventFactory</node>
+    <node x="181.0" y="655.0">net.debreczeni.remotedesktop.util.ImageUtil</node>
+    <node x="1410.0" y="345.0">org.springframework.boot.autoconfigure.SpringBootApplication</node>
+    <node x="834.5" y="190.0">net.debreczeni.remotedesktop.model.socket.events.RemoteEvent.EventType</node>
+    <node x="346.0" y="655.0">net.debreczeni.remotedesktop.security.TripleDes</node>
+    <node x="511.0" y="655.0">net.debreczeni.remotedesktop.security.Pinblock</node>
+    <node x="1162.5" y="190.0">net.debreczeni.remotedesktop.model.socket.events.MouseMovementEvent</node>
+    <node x="0.0" y="505.0">net.debreczeni.remotedesktop.factory.MouseWheelEventFactory</node>
+    <node x="702.5" y="110.0">javax.swing.JLabel</node>
+    <node x="306.5" y="110.0">net.debreczeni.remotedesktop.model.User</node>
+    <node x="368.0" y="425.0">net.debreczeni.remotedesktop.factory.AbstractEventFactory</node>
+    <node x="667.530769230769" y="270.0">net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent.TYPE</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="net.debreczeni.remotedesktop.ui.ScreenView" target="javax.swing.JLabel">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent.EventType" target="java.io.Serializable">
+      <point x="-30.0" y="-15.0" />
+      <point x="864.5" y="80.0" />
+      <point x="628.1" y="80.0" />
+      <point x="21.600000000000023" y="15.0" />
+    </edge>
+    <edge source="javax.swing.JPanel" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="462.5" y="90.0" />
+      <point x="599.3" y="90.0" />
+      <point x="-7.2000000000000455" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent.TYPE" target="java.io.Serializable">
+      <point x="-20.0" y="-15.0" />
+      <point x="687.530769230769" y="245.0" />
+      <point x="0.0" y="245.0" />
+      <point x="0.0" y="50.0" />
+      <point x="541.7" y="50.0" />
+      <point x="-64.79999999999995" y="15.0" />
+    </edge>
+    <edge source="javax.swing.JLabel" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="750.5" y="90.0" />
+      <point x="613.7" y="90.0" />
+      <point x="7.2000000000000455" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.User" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="346.5" y="80.0" />
+      <point x="584.9" y="80.0" />
+      <point x="-21.600000000000023" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.MouseEvent.TYPE" target="net.debreczeni.remotedesktop.model.socket.events.MouseEvent">
+      <point x="-20.0" y="-15.0" />
+      <point x="1627.75" y="245.0" />
+      <point x="1610.5" y="245.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent" target="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="1450.5" y="170.0" />
+      <point x="1285.7" y="170.0" />
+      <point x="27.200000000000045" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.factory.AbstractEventFactory" target="java.lang.FunctionalInterface">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.MouseWheelEvent" target="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="1058.5" y="170.0" />
+      <point x="1231.3" y="170.0" />
+      <point x="-27.200000000000045" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.MouseMovementEvent" target="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.ui.DisplayDetails" target="javax.swing.JPanel">
+      <point x="-40.0" y="-15.0" />
+      <point x="494.5" y="170.0" />
+      <point x="462.5" y="170.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="1258.5" y="70.0" />
+      <point x="642.5" y="70.0" />
+      <point x="36.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.ui.Main" target="javax.swing.JFrame">
+      <point x="0.0" y="-15.0" />
+      <point x="174.5" y="170.0" />
+      <point x="214.5" y="170.0" />
+      <point x="-24.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.factory.MouseMovementEventFactory" target="net.debreczeni.remotedesktop.factory.AbstractEventFactory">
+      <point x="0.0" y="-15.0" />
+      <point x="596.0" y="485.0" />
+      <point x="498.0" y="485.0" />
+      <point x="26.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.controller.RClientController" target="org.springframework.stereotype.Controller">
+      <point x="0.0" y="-15.0" />
+      <point x="1061.0" y="400.0" />
+      <point x="1131.0" y="400.0" />
+      <point x="-32.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.factory.MouseEventFactory" target="net.debreczeni.remotedesktop.factory.AbstractEventFactory">
+      <point x="0.0" y="-15.0" />
+      <point x="832.0" y="475.0" />
+      <point x="550.0" y="475.0" />
+      <point x="78.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.image.Display" target="net.debreczeni.remotedesktop.image.Imageable">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.MouseEvent.TYPE" target="java.io.Serializable">
+      <point x="20.0" y="-15.0" />
+      <point x="1667.75" y="245.0" />
+      <point x="1685.0" y="245.0" />
+      <point x="1685.0" y="60.0" />
+      <point x="656.9000000000001" y="60.0" />
+      <point x="50.40000000000009" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.factory.MouseWheelEventFactory" target="net.debreczeni.remotedesktop.factory.AbstractEventFactory">
+      <point x="0.0" y="-15.0" />
+      <point x="112.0" y="475.0" />
+      <point x="394.0" y="475.0" />
+      <point x="-78.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.controller.RServerController" target="org.springframework.stereotype.Controller">
+      <point x="0.0" y="-15.0" />
+      <point x="1265.0" y="400.0" />
+      <point x="1195.0" y="400.0" />
+      <point x="32.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.security.PasswordHandler.TYPE" target="net.debreczeni.remotedesktop.security.PasswordHandler">
+      <point x="20.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.ui.DisplayDetails" target="java.awt.event.MouseListener">
+      <point x="40.0" y="-15.0" />
+      <point x="574.5" y="170.0" />
+      <point x="606.5" y="170.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.RemoteServerApplication" target="org.springframework.boot.autoconfigure.SpringBootApplication">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.factory.KeyboardEventFactory" target="net.debreczeni.remotedesktop.factory.AbstractEventFactory">
+      <point x="0.0" y="-15.0" />
+      <point x="348.0" y="485.0" />
+      <point x="446.0" y="485.0" />
+      <point x="-26.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.MouseEvent" target="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="1610.5" y="160.0" />
+      <point x="1312.9" y="160.0" />
+      <point x="54.40000000000009" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.security.PasswordHandler.TYPE" target="java.io.Serializable">
+      <point x="-20.0" y="-15.0" />
+      <point x="1718.0673076923076" y="50.0" />
+      <point x="671.3000000000001" y="50.0" />
+      <point x="64.80000000000007" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent.TYPE" target="net.debreczeni.remotedesktop.model.socket.events.KeyboardEvent">
+      <point x="20.0" y="-15.0" />
+      <point x="727.530769230769" y="245.0" />
+      <point x="1450.5" y="245.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent.EventType" target="net.debreczeni.remotedesktop.model.socket.events.RemoteEvent">
+      <point x="30.0" y="-15.0" />
+      <point x="924.5" y="160.0" />
+      <point x="1204.1" y="160.0" />
+      <point x="-54.40000000000009" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.model.socket.RemoteDisplays" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="90.5" y="60.0" />
+      <point x="556.1" y="60.0" />
+      <point x="-50.39999999999998" y="15.0" />
+    </edge>
+    <edge source="javax.swing.JFrame" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="238.5" y="70.0" />
+      <point x="570.5" y="70.0" />
+      <point x="-36.0" y="15.0" />
+    </edge>
+    <edge source="net.debreczeni.remotedesktop.ui.ScreenShare" target="javax.swing.JFrame">
+      <point x="0.0" y="-15.0" />
+      <point x="302.5" y="170.0" />
+      <point x="262.5" y="170.0" />
+      <point x="24.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="921.5" y="342.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Inner Classes</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
